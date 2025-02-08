@@ -16,8 +16,8 @@ import dotty.tools.dotc.core.Contexts;
 import dotty.tools.io.AbstractFile;
 
 //Invokes Scala 3 compiler
-class ScalacInvoker{
-  public static ScalacInvokerResults invokeCompiler(CompileOptions ops, String[] compilerArgs)
+public class ScalacInvoker implements IScalacInvoker{
+  public ScalacInvokerResults invokeCompiler(CompileOptions ops, String[] compilerArgs)
     throws IOException, Exception{
 
     ScalacInvokerResults results = new ScalacInvokerResults();
@@ -25,9 +25,12 @@ class ScalacInvoker{
 
     Tuple2<scala.collection.immutable.List<AbstractFile>, Contexts.Context> r = 
       driver.setup(compilerArgs, driver.initCtx().fresh())
+      .get();
+      /*
         .getOrElse(() -> {
-          throw new ScalacWorker.InvalidSettings();
+          throw new Exception(); //TODO: FIX THIS//ScalacWorker.InvalidSettings();
         });
+         */
 
     Contexts.Context ctx = r._2;
     Compiler compiler = driver.newCompiler(ctx);
@@ -49,7 +52,7 @@ class ScalacInvoker{
 
     if (reporter.hasErrors()) {
       reporter.flush(ctx);
-      throw new ScalacWorker.CompilationFailed("with errors.");
+      throw new ScalacWorkerExceptions.CompilationFailed("with errors.");
     }
 
     return results;

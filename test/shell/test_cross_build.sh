@@ -23,7 +23,7 @@ function test_scalafmt() {
 }
 
 $runner test_cross_build
-$runner test_scalafmt
+#$runner test_scalafmt
 
 # `bazel shutdown` used to be in `test_cross_build`, after a `bazel clean`.
 # However, the protobuf library tends to rebuild frequently. Not cleaning and

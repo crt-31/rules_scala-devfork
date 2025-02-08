@@ -1,4 +1,7 @@
 load("@io_bazel_rules_scala//scala:providers.bzl", "DepsInfo")
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac:runner.bzl", "RUNNER_ATTRS")
+
 
 def _generators(ctx):
     return dict(
@@ -51,7 +54,8 @@ def _scala_proto_toolchain_impl(ctx):
         compile_dep_ids = _compile_dep_ids(ctx),
         blacklisted_protos = _ignored_proto_targets_by_label(ctx),
         protoc = ctx.executable.protoc,
-        scalac = ctx.attr.scalac.files_to_run,
+        scalac = ctx.attr._scalac.files_to_run,
+        _scalacrunner_jars = ctx.attr._scalacrunner_jars,
         worker = ctx.attr.code_generator.files_to_run,
         worker_flags = _worker_flags(ctx, generators, generators_jars),
         stamp_by_convention = ctx.attr.stamp_by_convention,
@@ -66,7 +70,7 @@ def _scala_proto_toolchain_impl(ctx):
 #     code_generator: what code generator to use, usually you'll want the default
 scala_proto_toolchain = rule(
     implementation = _scala_proto_toolchain_impl,
-    attrs = {
+    attrs = dicts.add({
         "with_grpc": attr.bool(),
         "with_flat_package": attr.bool(),
         "with_single_line_to_string": attr.bool(),
@@ -81,12 +85,6 @@ scala_proto_toolchain = rule(
         "named_generators": attr.string_dict(),
         "extra_generator_dependencies": attr.label_list(
             providers = [JavaInfo],
-        ),
-        "scalac": attr.label(
-            executable = True,
-            cfg = "exec",
-            default = Label("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac"),
-            allow_files = True,
         ),
         "protoc": attr.label(
             executable = True,
@@ -106,6 +104,7 @@ scala_proto_toolchain = rule(
             """,
         ),
     },
+    RUNNER_ATTRS,)
 )
 
 def _scala_proto_deps_toolchain(ctx):

@@ -126,11 +126,12 @@ def _compile_sources(ctx, toolchain, proto, src_jars, deps, scalacopts, stamp_la
         expect_java_output = False,
         scalac_jvm_flags = [],
         scalacopts = scalacopts,
-        scalac = toolchain.scalac,
+        scalac = toolchain.scalac,        
         dependency_info = legacy_unclear_dependency_info_for_protobuf_scrooge(ctx),
         unused_dependency_checker_ignored_targets = [],
         stamp_target_label = stamp_label,
         additional_outputs = [],
+        compiler_jars = toolchain._scalacrunner_jars,
     )
 
     return JavaInfo(

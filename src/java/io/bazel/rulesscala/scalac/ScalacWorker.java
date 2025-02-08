@@ -1,6 +1,9 @@
 package io.bazel.rulesscala.scalac;
 
 import static java.io.File.pathSeparator;
+
+import java.io.BufferedReader;
+
 import io.bazel.rulesscala.io_utils.StreamCopy;
 import io.bazel.rulesscala.jar.JarCreator;
 import io.bazel.rulesscala.scalac.compileoptions.CompileOptions;
@@ -9,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -24,29 +28,22 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
+import javax.xml.transform.Source;
+
 class ScalacWorker implements Worker.Interface {
-
-  public static class InvalidSettings extends WorkerException {
-    public InvalidSettings() {
-      super("Failed to invoke Scala compiler, ensure passed options are valid");
-    }
-  }
-
-  public static class CompilationFailed extends WorkerException {
-    public CompilationFailed(String reason, Throwable cause) {
-      super("Build failure " + reason, cause);
-    }
-    public CompilationFailed(String reason) {
-      this(reason, null);
-    }
-  }
 
   private static final boolean isWindows =
       System.getProperty("os.name").toLowerCase().contains("windows");
 
   public static void main(String[] args) throws Exception {
-    Worker.workerMain(args, new ScalacWorker());
+    ScalacWorker worker = new ScalacWorker();
+    Worker.workerMain(args, worker);
   }
+
+  ScalacWorker() throws Exception{
+
+  }
+  ScalacRunner _scalacRunner =  new ScalacRunner();
 
   @Override
   public void work(String[] args) throws Exception {
@@ -256,7 +253,7 @@ class ScalacWorker implements Worker.Interface {
     return pluginParams.toArray(new String[pluginParams.size()]);
   }
 
-  private static void compileScalaSources(CompileOptions ops, String[] scalaSources, Path classes)
+  private  void compileScalaSources(CompileOptions ops, String[] scalaSources, Path classes)
       throws IOException, Exception {
 
     String[] pluginArgs = buildPluginArgs(ops.plugins);
@@ -269,7 +266,8 @@ class ScalacWorker implements Worker.Interface {
     String[] compilerArgs =
         merge(ops.scalaOpts, pluginArgs, constParams, pluginParams, scalaSources);
 
-    ScalacInvokerResults compilerResults = ScalacInvoker.invokeCompiler(ops, compilerArgs);
+    ;
+    ScalacInvokerResults compilerResults = _scalacRunner.invokeCompiler(ops, compilerArgs);
 
     if (ops.printCompileTime) {
       System.err.println("Compiler runtime: " + (compilerResults.stopTime - compilerResults.startTime) + "ms.");

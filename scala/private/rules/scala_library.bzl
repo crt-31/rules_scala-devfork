@@ -39,6 +39,7 @@ load(
     "phase_write_manifest",
     "run_phases",
 )
+load("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac:runner.bzl", "BOOTSTRAP_RUNNER_ATTRS")
 
 ##
 # Common stuff to _library rules
@@ -172,15 +173,12 @@ _scala_library_for_plugin_bootstrapping_attrs.update(implicit_deps)
 # the scala compiler plugin used for dependency analysis is compiled using `scala_library`.
 # in order to avoid cyclic dependencies `scala_library_for_plugin_bootstrapping` was created for this purpose,
 # which does not contain plugin related attributes, and thus avoids the cyclic dependency issue
-_scala_library_for_plugin_bootstrapping_attrs.update({
+_scala_library_for_plugin_bootstrapping_attrs.update( 
+    _dicts.add({
     "build_ijar": attr.bool(default = True),
-    "_scalac": attr.label(
-        executable = True,
-        cfg = "exec",
-        default = Label("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac:scalac_bootstrap"),
-        allow_files = True,
-    ),
-})
+    },    
+    BOOTSTRAP_RUNNER_ATTRS)
+ )
 
 _scala_library_for_plugin_bootstrapping_attrs.update(_library_attrs)
 

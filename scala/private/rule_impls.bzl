@@ -57,7 +57,9 @@ def compile_scala(
         dependency_info,
         unused_dependency_checker_ignored_targets,
         additional_outputs,
-        stamp_target_label = None):
+        compiler_jars,
+        stamp_target_label = None,
+        ):
     # look for any plugins:
     input_plugins = plugins
     plugins = _collect_plugin_paths(plugins)
@@ -100,6 +102,12 @@ def compile_scala(
     args.add_all("--ScalacOpts", scalacopts_expanded)
     args.add_all("--SourceJars", all_srcjars)
 
+
+    compiler_jar_depset = depset(transitive = [cj[JavaInfo].transitive_runtime_jars for cj in compiler_jars])
+    compiler_jar_paths = [cj.path for cj in compiler_jar_depset.to_list()]
+    #Add scala_libraries
+    args.add_all("--ScalaCompilerJars", compiler_jar_paths)
+        
     if dependency_info.need_direct_info:
         args.add_all("--DirectJars", cjars)
         args.add_all("--DirectTargets", [labels[j.path] for j in cjars.to_list()])
@@ -117,7 +125,7 @@ def compile_scala(
 
     ins = depset(
         direct = [manifest] + sources + classpath_resources + resources + resource_jars,
-        transitive = [compiler_classpath_jars, all_srcjars, plugins],
+        transitive = [compiler_classpath_jars, all_srcjars, plugins, compiler_jar_depset],
     )
 
     # scalac_jvm_flags passed in on the target override scalac_jvm_flags passed in on the toolchain

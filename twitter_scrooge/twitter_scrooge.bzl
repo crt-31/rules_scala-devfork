@@ -23,6 +23,8 @@ load(
     "merge_thrift_infos",
 )
 load("//third_party/repositories:repositories.bzl", "repositories")
+load("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac:runner.bzl", "RUNNER_ATTRS")
+
 
 _jar_extension = ".jar"
 
@@ -287,6 +289,7 @@ def _compile_generated_scala(
         dependency_info = legacy_unclear_dependency_info_for_protobuf_scrooge(ctx),
         unused_dependency_checker_ignored_targets = [],
         additional_outputs = [],
+        compiler_jars = ctx.attr._scalacrunner_jars,
     )
 
     return _create_java_info_provider(scrooge_jar, all_deps, output)
@@ -454,14 +457,7 @@ scrooge_scala_aspect = aspect(
     attr_aspects = ["deps"],
     attrs = dicts.add(
         common_attrs,
-        {
-            "_scalac": attr.label(
-                executable = True,
-                cfg = "exec",
-                default = Label("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac"),
-                allow_files = True,
-            ),
-        },
+        RUNNER_ATTRS,        
     ),
     provides = [ScroogeAspectInfo],
     required_aspect_providers = common_aspect_providers,

@@ -4,7 +4,7 @@ java_library(
     name = "compileoptions",
     srcs = ["CompileOptions.java"],
     visibility = ["//visibility:public"],
-    deps = ["//scala/private/toolchain_deps:scala_compile_classpath"],
+    #deps = ["//scala/private/toolchain_deps:scala_compile_classpath"],
 )
 
 java_test(

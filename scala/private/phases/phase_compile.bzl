@@ -153,6 +153,7 @@ def _phase_compile(
         unused_dependency_checker_ignored_targets,
         plugins,
         additional_outputs,
+        ctx.attr._scalacrunner_jars
     )
 
     # TODO: simplify the return values and use provider
@@ -180,7 +181,9 @@ def _compile_or_empty(
         default_classpath,
         unused_dependency_checker_ignored_targets,
         plugins,
-        additional_outputs):
+        additional_outputs,
+        compiler_jars
+        ):
     # We assume that if a srcjar is present, it is not empty
     if len(ctx.files.srcs) + len(srcjars.to_list()) == 0:
         _build_nosrc_jar(ctx)
@@ -224,6 +227,7 @@ def _compile_or_empty(
             dependency_info,
             unused_dependency_checker_ignored_targets,
             additional_outputs,
+            compiler_jars
         )
 
         # build ijar if needed

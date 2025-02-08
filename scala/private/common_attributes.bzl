@@ -8,6 +8,7 @@ load(
     "@io_bazel_rules_scala//scala:plusone.bzl",
     _collect_plus_one_deps_aspect = "collect_plus_one_deps_aspect",
 )
+load("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac:runner.bzl", "RUNNER_ATTRS")
 
 common_attrs_for_plugin_bootstrapping = {
     "srcs": attr.label_list(allow_files = [
@@ -87,18 +88,14 @@ implicit_deps = {
     "_java_host_runtime": attr.label(
         default = Label("@bazel_tools//tools/jdk:current_host_java_runtime"),
     ),
-    "_scalac": attr.label(
-        executable = True,
-        cfg = "exec",
-        default = Label("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/scalac"),
-        allow_files = True,
-    ),
     "_exe": attr.label(
         executable = True,
         cfg = "exec",
         default = Label("@io_bazel_rules_scala//src/java/io/bazel/rulesscala/exe:exe"),
     ),
 }
+
+implicit_deps.update(RUNNER_ATTRS)
 
 launcher_template = {
     "_java_stub_template": attr.label(
