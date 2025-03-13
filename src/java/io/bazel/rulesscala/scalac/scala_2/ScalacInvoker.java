@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.nio.file.Files;
 
 //Invokes Scala 2 compiler
-class ScalacInvoker{
+  public class ScalacInvoker extends IScalacInvoker{
 
-  public static ScalacInvokerResults invokeCompiler(CompileOptions ops, String[] compilerArgs)
+  public ScalacInvokerResults invokeCompiler(CompileOptions ops, String[] compilerArgs)
     throws IOException, Exception{
 
     ReportableMainClass comp = new ReportableMainClass(ops);
@@ -24,9 +24,9 @@ class ScalacInvoker{
       comp.process(compilerArgs);
     } catch (Throwable ex) {
       if (ex.toString().contains("scala.reflect.internal.Types$TypeError")) {
-        throw new ScalacWorker.CompilationFailed("with type error", ex);
+        throw new Exceptions.CompilationFailed("with type error", ex);
       } else if (ex.toString().contains("java.lang.StackOverflowError")) {
-        throw new ScalacWorker.CompilationFailed("with StackOverflowError", ex);
+        throw new Exceptions.CompilationFailed("with StackOverflowError", ex);
       } else if (isMacroException(ex)) {
         String reason;
 
@@ -36,7 +36,7 @@ class ScalacInvoker{
           reason = "during macro expansion";
         }
 
-        throw new ScalacWorker.CompilationFailed(reason, ex);
+        throw new Exceptions.CompilationFailed(reason, ex);
       } else {
         throw ex;
       }
@@ -50,7 +50,7 @@ class ScalacInvoker{
     if (reporter == null) {
       // Can happen only when `ReportableMainClass::newCompiler` was not invoked,
       // typically due to invalid settings
-      throw new ScalacWorker.InvalidSettings();
+      throw new Exceptions.InvalidSettings();
     }
 
     if (reporter instanceof ProtoReporter) {
@@ -66,7 +66,7 @@ class ScalacInvoker{
 
     if (reporter.hasErrors()) {
       reporter.flush();
-      throw new ScalacWorker.CompilationFailed("with errors.");
+      throw new Exceptions.CompilationFailed("with errors.");
     }
 
     return results;

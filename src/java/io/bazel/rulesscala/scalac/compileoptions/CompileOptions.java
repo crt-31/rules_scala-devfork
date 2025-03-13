@@ -36,6 +36,9 @@ public class CompileOptions {
   public final String diagnosticsFile;
   public final boolean enableDiagnosticsReport;
   public final String scalaDepsFile;
+  public final String[] compilerBridgeJars;
+
+
   public CompileOptions(String[] lines) {
     Args args = new Args(lines);
 
@@ -75,6 +78,7 @@ public class CompileOptions {
         Boolean.parseBoolean(args.getSingleOrError("EnableDiagnosticsReport"));
     diagnosticsFile = args.getSingleOrError("DiagnosticsFile");
     scalaDepsFile = args.getSingleOrError("ScalaDepsFile");
+    compilerBridgeJars = args.getOrEmpty("CompilerBridgeJars");
   }
 
   static final class Args {

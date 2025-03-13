@@ -95,6 +95,12 @@ implicit_deps = {
         default = Label("//src/java/io/bazel/rulesscala/scalac"),
         allow_files = True,
     ),
+    "_scalac_bridge": attr.label(
+        cfg = "exec",
+        default = Label("//src/java/io/bazel/rulesscala/scalac:scalac_bridge"),
+        allow_files = True,
+    ),
+
     "_exe": attr.label(
         executable = True,
         cfg = "exec",

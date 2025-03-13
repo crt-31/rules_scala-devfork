@@ -54,6 +54,7 @@ def compile_scala(
         scalac_jvm_flags,
         scalacopts,
         scalac,
+        scalac_bridge,
         dependency_info,
         unused_dependency_checker_ignored_targets,
         additional_outputs,
@@ -113,11 +114,19 @@ def compile_scala(
     if dependency_info.unused_deps_mode != "off" or dependency_info.strict_deps_mode != "off":
         args.add_all("--UnusedDepsIgnoredTargets", unused_dependency_checker_ignored_targets)
 
+    scalac_bridge_jars = [
+    jar.path
+    for jar in 
+        scalac_bridge[JavaInfo].transitive_runtime_jars.to_list() 
+            #+ scalac_bridge[JavaInfo].runtime_output_jars
+    ]
+    args.add_all("--CompilerBridgeJars", scalac_bridge_jars)
+
     outs = [output, statsfile, diagnosticsfile, scaladepsfile] + additional_outputs
 
     ins = depset(
         direct = [manifest] + sources + classpath_resources + resources + resource_jars,
-        transitive = [compiler_classpath_jars, all_srcjars, plugins],
+        transitive = [compiler_classpath_jars, all_srcjars, plugins, scalac_bridge[JavaInfo].transitive_runtime_jars],
     )
 
     # scalac_jvm_flags passed in on the target override scalac_jvm_flags passed in on the toolchain

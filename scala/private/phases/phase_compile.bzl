@@ -211,6 +211,7 @@ def _compile_or_empty(
             ctx.attr.scalac_jvm_flags,
             scalacopts,
             ctx.executable._scalac,
+            ctx.attr._scalac_bridge,
             dependency_info,
             unused_dependency_checker_ignored_targets,
             additional_outputs,

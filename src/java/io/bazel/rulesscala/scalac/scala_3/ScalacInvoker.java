@@ -26,7 +26,7 @@ class ScalacInvoker{
     Tuple2<scala.collection.immutable.List<AbstractFile>, Contexts.Context> r = 
       driver.setup(compilerArgs, driver.initCtx().fresh())
         .getOrElse(() -> {
-          throw new ScalacWorker.InvalidSettings();
+          throw new Exceptions.InvalidSettings();
         });
 
     Contexts.Context ctx = r._2;
@@ -49,7 +49,7 @@ class ScalacInvoker{
 
     if (reporter.hasErrors()) {
       reporter.flush(ctx);
-      throw new ScalacWorker.CompilationFailed("with errors.");
+      throw new Exceptions.CompilationFailed("with errors.");
     }
 
     return results;

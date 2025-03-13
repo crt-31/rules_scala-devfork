@@ -177,11 +177,10 @@ _scala_library_for_plugin_bootstrapping_attrs.update(implicit_deps)
 # which does not contain plugin related attributes, and thus avoids the cyclic dependency issue
 _scala_library_for_plugin_bootstrapping_attrs.update({
     "build_ijar": attr.bool(default = True),
-    "_scalac": attr.label(
-        executable = True,
+    "_scalac_bridge": attr.label(
         cfg = "exec",
         default = Label(
-            "//src/java/io/bazel/rulesscala/scalac:scalac_bootstrap",
+            "//src/java/io/bazel/rulesscala/scalac:scalac_bootstrap_bridge",
         ),
         allow_files = True,
     ),
